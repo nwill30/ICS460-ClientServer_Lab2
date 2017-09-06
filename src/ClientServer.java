@@ -12,6 +12,9 @@ public class ClientServer {
 
         Socket socket = serverSocket.accept();
         String fileName = readStream(socket);
+        BufferedWriter bufferedWriter = getBufferedWriter(socket);
+        BufferedReader bufferedReader =  getBufferedReader(fileName, socket);
+        outputStream(bufferedWriter, bufferedReader);
 
         socket.close();
         serverSocket.close();
@@ -38,21 +41,37 @@ public class ClientServer {
         return message;
     }
 
-    private static String outputFile(String fileName){
+    private static BufferedWriter getBufferedWriter(Socket socket){
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream));
+            return bufferedWriter;
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("invalid socket provided");
+        }
+        return null;
+    }
+
+    private static BufferedReader getBufferedReader(String fileName, Socket socket) {
 
         File file = new File(fileName);
-        String readLine = null;
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            while((readLine = bufferedReader.readLine())!= null){
-                System.out.println(readLine);
-            }
-            return "hi";
+            return bufferedReader;
         } catch (FileNotFoundException e) {
-            return "Error: Cannot locate requested file";
+            System.out.println("Error: Cannot locate requested file");
         } catch (IOException e) {
-            return "Error: Cannot read file";
+            System.out.println("Error: Cannot read file");
         }
+        return null;
+    }
+    private static void outputStream(BufferedWriter bufferedWriter,
+                                     BufferedReader bufferedReader) throws IOException {
 
+        String readLine = null;
+        while((readLine = bufferedReader.readLine())!= null){
+            bufferedWriter.write(readLine);
+        }
     }
 }
