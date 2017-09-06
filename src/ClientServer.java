@@ -66,6 +66,7 @@ public class ClientServer {
         }
         return null;
     }
+
     private static void outputStream(BufferedWriter bufferedWriter,
                                      BufferedReader bufferedReader) throws IOException {
 
